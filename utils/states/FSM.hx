@@ -1,4 +1,4 @@
-package;
+package utils.states;
 import haxe.ds.StringMap;
 
 /**
@@ -46,10 +46,47 @@ class FSM{
 	 * @param	stateName	Name of the state.
 	 * @param	state		An instance of the state object itself which implements IState.
 	 * @param	from		An array of state names that this state can transition from.
+	 * 						Empty array or null means this state can transition from any state.
+	 * @return	This, for method chaining.
 	 */
-	public function addState(stateName:String, state:IState, from:Array<String>):Void {
+	public function addState(stateName:String, state:IState, ?from:Array<String>):FSM {
 		stateMap.set(stateName, state);
-		fromMap.set(stateName, from);
+		fromMap.set(stateName, from == null ? [] : from);
+		return this;
+	}
+	
+	/**
+	 * Calls istate.init(). Shorthand for method chaining.
+	 * @param	stateName	The state to init.
+	 * @return	This, for method chaining.
+	 */
+	public function initState(stateName:String):FSM {
+		stateMap.get(stateName).init();
+		return this;
+	}
+	
+	/**
+	 * Calls istate.destroy(). Shorthand for method chaining.
+	 * @param	stateName	The state to destroy.
+	 * @return	This, for method chaining.
+	 */
+	public function destroyState(stateName:String):FSM {
+		stateMap.get(stateName).destroy();
+		return this;
+	}
+	
+	/**
+	 * Calls init on all added states.
+	 */
+	public function initAll():Void {
+		for (state in stateMap) state.init();
+	}
+	
+	/**
+	 * Calls destroy on all added states.
+	 */
+	public function destroyAll():Void {
+		for (state in stateMap) state.destroy();
 	}
 	
 	/**
@@ -58,6 +95,17 @@ class FSM{
 	 */
 	public inline function update(dt:Float):Void {
 		current.update(dt);
+	}
+	
+	/**
+	 * Checks if a potential state swap is valid.
+	 * @param	test		The new state to test.
+	 * @param	from		The state to check the transition from.
+	 * @return	If the state change is valid.
+	 */
+	public function canSwapFrom(test:String, from:String):Bool {
+		var a = fromMap.get(test);
+		return a.length == 0 || a.indexOf(from) != -1;
 	}
 	
 	/**
@@ -77,7 +125,7 @@ class FSM{
 			// Lib.trace('Already in the ${current.name} state.');
 		}
 		
-		else if (fromMap.get(newState).indexOf(current.name) != -1) {
+		else if (canSwapFrom(newState, current.name)) {
 			current.exit();
 			previous = current;
 			current = ns;

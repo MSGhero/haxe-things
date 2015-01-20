@@ -1,4 +1,4 @@
-package;
+package utils;
 #if flash
 import flash.net.FileFilter;
 import flash.net.FileReference;

@@ -1,4 +1,4 @@
-package;
+package utils.states;
 
 /**
  * State interface for FSM.
@@ -13,6 +13,16 @@ interface IState {
   var name(default, null):String;
   
   /**
+   * Call to set up the state's initial...state.
+   */
+  function init():Void;
+  
+  /**
+   * Call to clear the state of references.
+   */
+  function destroy():Void;
+  
+  /**
    * Called when this state is transitioned to.
    */
   function enter():Void;
@@ -23,9 +33,14 @@ interface IState {
   function exit():Void;
   
   /**
-   * Call to clear the state of references.
+   * Called when this state is transitioned from temporarily (i.e. in a Stack FSM).
    */
-  function destroy():Void;
+  function suspend():Void;
+  
+  /**
+   * Called when this state is transitioned back to (i.e. in a Stack FSM).
+   */
+  function revive():Void;
   
   /**
    * Called when the state machine is updated.
