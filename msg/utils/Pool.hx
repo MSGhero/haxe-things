@@ -1,4 +1,4 @@
-package utils;
+package msg.utils;
 
 /**
  * Object pool for classes with parameterless constructors.

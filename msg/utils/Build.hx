@@ -1,4 +1,4 @@
-package ;
+package msg.utils;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -18,12 +18,13 @@ class Build {
 	
 #if macro
 	/**
-	 * Build macro to increment the build counter found in assets/build.txt (creates the file if nonexistent).
-	 * Remember to add a haxeflag for "--macro Build.build()"
+	 * Build macro to increment a build counter (creates the file if nonexistent).
+	 * Remember to add a haxeflag for "--macro Build.build(path)".
+	 * @param	pathToBuild		The full (absolute) path to the folder containing build.txt (full/path/to). There might be an easier way knowing haxe.
 	 */
-	public static function build() {
+	public static function build(pathToBuild:String) {
 	#if !display
-		var buildPath = "./assets/build.txt";
+		var buildPath = '$pathToBuild/build.txt';
 		var i = FileSystem.exists(buildPath) ? Std.parseInt(File.getContent(buildPath)) + 1 : 1;
 		ver = Std.string(i);
 		File.saveContent(buildPath, Std.string(i));

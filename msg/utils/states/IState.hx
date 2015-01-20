@@ -1,4 +1,4 @@
-package utils.states;
+package msg.utils.states;
 
 /**
  * State interface for FSM.

@@ -1,4 +1,4 @@
-package utils.states;
+package msg.utils;
 
 /**
  * A LIFO stack of T.
@@ -49,7 +49,9 @@ class Stack<T>{
 	 * @return	The T at the top of the stack.
 	 */
 	public inline function popEntirely():T {
-		arr.remove(arr[--length]);
+		var t = arr[--length];
+		arr.remove(t);
+		return t;
 	}
 	
 	/**

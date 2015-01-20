@@ -1,4 +1,4 @@
-package utils.states;
+package msg.utils.states;
 import haxe.ds.StringMap;
 
 /**
