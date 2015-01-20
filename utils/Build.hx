@@ -1,4 +1,4 @@
-package utils;
+package ;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -22,12 +22,12 @@ class Build {
 	 * Remember to add a haxeflag for "--macro Build.build()"
 	 */
 	public static function build() {
-		#if !display
+	#if !display
 		var buildPath = "./assets/build.txt";
 		var i = FileSystem.exists(buildPath) ? Std.parseInt(File.getContent(buildPath)) + 1 : 1;
 		ver = Std.string(i);
 		File.saveContent(buildPath, Std.string(i));
-		#end
+	#end
 	}
 #end
 	
