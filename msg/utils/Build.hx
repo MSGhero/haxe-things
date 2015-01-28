@@ -23,7 +23,7 @@ class Build {
 	 */
 	public static function build() {
 	#if !display
-		var buildPath = FileSystem.absPath('assets/build.txt'); // not sure if this works all the time
+		var buildPath = FileSystem.fullPath('assets/build.txt'); // not sure if this works all the time
 		var i = FileSystem.exists(buildPath) ? Std.parseInt(File.getContent(buildPath)) + 1 : 1;
 		ver = Std.string(i);
 		File.saveContent(buildPath, Std.string(i));
