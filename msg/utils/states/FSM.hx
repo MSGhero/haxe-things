@@ -56,6 +56,17 @@ class FSM{
 	}
 	
 	/**
+	 * Removes a state mapping from the FSM.
+	 * @param	stateName	Name of the state.
+	 * @return	This, for method chaining.
+	 */
+	public function removeState(stateName:String):FSM {
+		stateMap.remove(stateName);
+		fromMap.remove(stateName);
+		return this;
+	}
+	
+	/**
 	 * Calls istate.init(). Shorthand for method chaining.
 	 * @param	stateName	The state to init.
 	 * @return	This, for method chaining.
