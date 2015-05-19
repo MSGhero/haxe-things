@@ -21,7 +21,7 @@ class Stack<T>{
 	/**
 	 * Clears out the stack, setting the length back to zero.
 	 */
-	public inline function clear():Void {
+	public function clear():Void {
 		arr = [];
 		length = 0;
 	}
@@ -30,7 +30,7 @@ class Stack<T>{
 	 * Adds a T to the top of the stack.
 	 * @param	t	A T to add.
 	 */
-	public inline function push(t:T):Void {
+	public function push(t:T):Void {
 		arr[length++] = t;
 	}
 	
@@ -39,7 +39,7 @@ class Stack<T>{
 	 * References to T remain in memory, so be wary.
 	 * @return	The T at the top of the stack.
 	 */
-	public inline function pop():T {
+	public function pop():T {
 		return arr[--length];
 	}
 	
@@ -48,7 +48,7 @@ class Stack<T>{
 	 * The references to T are removed.
 	 * @return	The T at the top of the stack.
 	 */
-	public inline function popEntirely():T {
+	public function popEntirely():T {
 		var t = arr[--length];
 		arr.remove(t);
 		return t;
@@ -58,7 +58,7 @@ class Stack<T>{
 	 * Returns, but does not pop, the T at the top of the stack.
 	 * @return	The T at the top of the stack.
 	 */
-	public inline function peek():T {
+	public function peek():T {
 		return arr[length - 1];
 	}
 	
@@ -69,7 +69,7 @@ class Stack<T>{
 	 * @param	fromIndex	Optional index to begin searching from.
 	 * @return
 	 */
-	public inline function indexOf(t:T, ?fromIndex:Int):Int {
+	public function indexOf(t:T, ?fromIndex:Int):Int {
 		var i = arr.indexOf(t, fromIndex);
 		return i == -1 ? i : length - i - 1;
 	}
@@ -78,7 +78,7 @@ class Stack<T>{
 	 * If the stack is empty.
 	 * @return	"
 	 */
-	public inline function isEmpty():Bool {
+	public function isEmpty():Bool {
 		return length == 0;
 	}
 }
