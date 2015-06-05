@@ -66,7 +66,7 @@ class Build {
 	 * @example
 	 * 		@:build(Build.parseJSONFiles("assets/data/"))
 	 * 		class Main extends Sprite {
-	 * 	creates "json" StringMap<Dynamic> variable. The key is the relative filepath after "pathToFiles", and the value is the parsed JSON.
+	 * 	creates "json" StringMap<Dynamic> variable. The key is the relative filepath after "pathToFiles" WITHOUT the ".json", and the value is the parsed JSON.
 	 * @param	pathToFiles	The path of the directory holding the json files.
 	 * @param	staticVar If the created var should be public static inline or just public.
 	 * @return
@@ -91,7 +91,7 @@ class Build {
 			else {
 				if (fileOrDir.substr(fileOrDir.length - 5) != ".json") continue;
 				var o = Context.parseInlineString(File.getContent(pathToFiles + fileOrDir), Context.currentPos());
-				a.push({ expr : EBinop(OpArrow, macro $v{fileOrDir}, o), pos : Context.currentPos() }); // [key => val] map syntax in Expr form
+				a.push({ expr : EBinop(OpArrow, macro $v{fileOrDir.substr(0, fileOrDir.length - 5)}, o), pos : Context.currentPos() }); // [key => val] map syntax in Expr form
 			}
 		}
 	#end
