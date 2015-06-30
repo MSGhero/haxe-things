@@ -42,6 +42,16 @@ class FSM{
 	}
 	
 	/**
+	 * Destroys the FSM entirely to ensure GC removal.
+	 * Call reset() if you need to use this FSM again.
+	 */
+	public function destroy():Void {
+		stateMap = null;
+		fromMap = null;
+		current = previous = null;
+	}
+	
+	/**
 	 * Adds a state mapping to the FSM.
 	 * @param	stateName	Name of the state.
 	 * @param	state		An instance of the state object itself which implements IState.
