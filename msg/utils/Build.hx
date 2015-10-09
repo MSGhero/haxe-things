@@ -79,6 +79,7 @@ class Build {
 	#if !display
 		if (pathToFiles.charAt(pathToFiles.length - 1) != "/") pathToFiles = pathToFiles + "/";
 		var files = FileSystem.readDirectory(pathToFiles);
+		var success = true;
 		
 		while (files.length > 0) {
 			
@@ -90,10 +91,20 @@ class Build {
 			
 			else {
 				if (fileOrDir.substr(fileOrDir.length - 5) != ".json") continue;
-				var o = Context.parseInlineString(File.getContent(pathToFiles + fileOrDir), Context.makePosition({ min : 0, max : 0, file : pathToFiles + fileOrDir})); // shows the position within the json file on invalid json error
-				a.push({ expr : EBinop(OpArrow, macro $v{fileOrDir.substr(0, -5)}, o), pos : Context.currentPos() }); // [key => val] map syntax in Expr form
+				
+				try {
+					var o = Context.parseInlineString(File.getContent(pathToFiles + fileOrDir), Context.makePosition( { min : 0, max : 0, file : pathToFiles + fileOrDir } )); // shows the position within the json file on invalid json error
+					a.push( { expr : EBinop(OpArrow, macro $v { fileOrDir.substr(0, -5) }, o), pos : Context.currentPos() } ); // [key => val] map syntax in Expr form
+				}
+				
+				catch (err:Error) {
+					Context.warning(err.message, err.pos); // if there's incorrect syntax, show them all before cancelling the build
+					success = false;
+				}
 			}
 		}
+		
+		if (!success) Context.fatalError("Build Cancelled. Fix JSON errors.", Context.currentPos());
 	#end
 		
 		var nf:Field = {
