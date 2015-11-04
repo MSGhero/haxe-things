@@ -51,12 +51,13 @@ class Array2D<T>{
 	}
 	
 	/**
-	 * Clears the array and fills it with the supplied T.
+	 * Clears the array and fills it with the supplied T. Changes the number of columns.
 	 * @param	t		What to fill the array with.
 	 * @param	numRows	How many rows of Ts to add.
-	 * @param	numCols	How many cols of Ts to add.
+	 * @param	numCols	How many cols of Ts to add. The new number of columns gets set to this value.
 	 */
 	public function fill2(t:T, numRows:Int, numCols:Int):Void {
+		cols = numCols;
 		fill1(t, numRows * numCols);
 	}
 	
