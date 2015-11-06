@@ -1,4 +1,6 @@
 package msg.utils;
+import haxe.io.Eof;
+import haxe.Log;
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -10,7 +12,7 @@ import sys.FileSystem;
 #end
 
 /**
- * Useful macros. A build version incrementer and a compile-time JSON parser.
+ * Useful compile-time macros. A build version incrementer, lines of code counter, and a compile-time JSON parser.
  * @author MSGHero
  */
 class Build {
@@ -58,6 +60,51 @@ class Build {
 		
 		return fields;
 	}
+	
+#if macro
+	/**
+	 * Counts the lines of .hx code in the specified directory and traces it out. Doesn't include trailing CR/LFs at the end of each file.
+	 * Remember to add a haxeflag for "--macro msg.utils.Build.loc('full/path/to/files')".
+	 * The full path is required since this isn't a build macro like the others.
+	 * @param	dir	The directory to start looking for .hx files in.
+	 */
+	public static function loc(dir:String):Void {
+	#if !display
+		if (dir.charAt(dir.length - 1) != "/") dir = dir + "/";
+		
+		var files = FileSystem.readDirectory(dir);
+		var loc = 0;
+		
+		while (files.length > 0) {
+			
+			var fileOrDir = files.pop();
+			if (FileSystem.isDirectory(dir + fileOrDir)) {
+				var newFiles = FileSystem.readDirectory(dir + fileOrDir);
+				for (f in newFiles) files.push('$fileOrDir/$f');
+			}
+			
+			else {
+				if (fileOrDir.substr( -3) != ".hx") continue;
+				
+				var fih = File.read(dir + fileOrDir, true);
+				
+				try {
+					while (true) {
+						fih.readLine();
+						loc++;
+					}
+				}
+				
+				catch (e:Eof) { }
+				
+				fih.close();
+			}
+		}
+		
+		Log.trace('$loc lines of code in "$dir"');
+	#end
+	}
+#end
 	
 	/**
 	 * Parses all json files in a directory and subdirectories and puts them in a "json" StringMap variable.
