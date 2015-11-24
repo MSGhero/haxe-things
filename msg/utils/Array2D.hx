@@ -198,6 +198,65 @@ class Array2D<T>{
 		arr.splice(0, length);
 	}
 	
+	/**
+	 * Creates an Array<T> from this Array2D<T>.
+	 * @return	The 1D array representation of the data.
+	 */
+	public function to1DArray():Array<T> {
+		return arr.copy();
+	}
+	
+	/**
+	 * Creates an Array<Array<T>> from this Array2D<T>.
+	 * @return	The 2D array representation of the data.
+	 */
+	public function to2DArray():Array<Array<T>> {
+		
+		var data:Array<Array<T>> = [];
+		
+		for (rr in 0...rows) {
+			var a:Array<T> = [];
+			for (cc in 0...cols) {
+				a.push(get2(rr, cc));
+			}
+			data.push(a);
+		}
+		
+		return data;
+	}
+	
+	/**
+	 * Creates an Array2D<T> from the supplied Array<T>.
+	 * @param	arr		The 1D array to convert.
+	 * @param	cols	The number of columns the Array2D should have.
+	 * @return	The Array2D representation of the data.
+	 */
+	public static function from1DArray<S>(arr:Array<S>, cols:Int):Array2D<S>{
+		var a = new Array2D<S>(cols);
+		a.arr = arr;
+		return a;
+	}
+	
+	/**
+	 * Creates an Array2D<T> from the supplied Array<Array<T>>.
+	 * @param	arr		The 2D array to convert.
+	 * @param	cols	The number of columns the Array2D should have.
+	 * @return	The Array2D representation of the data.
+	 */
+	public static function from2DArray<S>(arr:Array<Array<S>>, cols:Int):Array2D<S>{
+		var a = new Array2D<S>(cols);
+		for (r in 0...arr.length){
+			var aa = arr[r];
+			for (c in 0...aa.length){
+				a.push(aa[c]);
+			}
+		}
+		return a;
+	}
+	
+	/**
+	 * @return	The prettified string of the Array2D.
+	 */
 	public function toString():String {
 		
 		var s = "";
