@@ -141,7 +141,7 @@ class Build {
 				
 				try {
 					var o = Context.parseInlineString(File.getContent(pathToFiles + fileOrDir), Context.makePosition( { min : 0, max : 0, file : pathToFiles + fileOrDir } )); // shows the position within the json file on invalid json error
-					a.push( { expr : EBinop(OpArrow, macro $v { fileOrDir.substr(0, -5) }, o), pos : Context.currentPos() } ); // [key => val] map syntax in Expr form
+					a.push( { expr : EBinop(OpArrow, macro $v { fileOrDir.substr(0, -5) }, macro untyped $o), pos : Context.currentPos() } ); // [key => val] map syntax in Expr form
 				}
 				
 				catch (err:Error) {
