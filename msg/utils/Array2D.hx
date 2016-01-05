@@ -7,7 +7,7 @@ package msg.utils;
 class Array2D<T>{
 
 	/** The underlying array. **/
-	var arr:Array<T>;
+	var _arr:Array<T>;
 	
 	/** The number of columns. This can be changed at any time. **/
 	public var cols:Int;
@@ -18,7 +18,7 @@ class Array2D<T>{
 	
 	/** The true length of the array, not just rows * cols. **/
 	public var length(get, never):Int;
-	inline function get_length():Int { return arr.length; }
+	inline function get_length():Int { return _arr.length; }
 	
 	// inline everything when the haxe issue is resolved
 	
@@ -27,7 +27,7 @@ class Array2D<T>{
 	 * @param	numCols	The number of columns.
 	 */
 	public function new(numCols:Int) {
-		arr = [];
+		_arr = [];
 		cols = numCols;
 	}
 	
@@ -35,7 +35,7 @@ class Array2D<T>{
 	 * Just the core array's iterator.
 	 */
 	public function iterator() {
-		return arr.iterator();
+		return _arr.iterator();
 	}
 	
 	/**
@@ -46,7 +46,7 @@ class Array2D<T>{
 	public function fill1(t:T, len:Int):Void {
 		clear();
 		while (len-- > 0) {
-			arr[arr.length] = t;
+			_arr[_arr.length] = t;
 		}
 	}
 	
@@ -70,7 +70,7 @@ class Array2D<T>{
 	public function fillAt1(t:T, start:Int, len:Int):Void {
 		var i = 0;
 		while (i++ < len) {
-			arr[start + i] = t;
+			_arr[start + i] = t;
 		}
 	}
 	
@@ -91,12 +91,37 @@ class Array2D<T>{
 	}
 	
 	/**
+	 * Fills the array with a 1D array from the supplied index.
+	 * Overwrites existing data and adds to the length as necessary.
+	 * @param	arr		The 1D array to overwrite data with.
+	 * @param	index	The index to start copying data to.
+	 */
+	public function fillWith1(arr:Array<T>, index:Int):Void {
+		var i = 0;
+		while (i < arr.length) set1(arr[i], index + i++);
+	}
+	
+	/**
+	 * Fills the array with an Array2D from the supplied row and col.
+	 * @param	arr			The Array2D to overwrite data with.
+	 * @param	startRow	The row to start copying data to.
+	 * @param	startCol	The col to start copying data to.
+	 */
+	public function fillWith2(arr:Array2D<T>, startRow:Int, startCol:Int):Void {
+		for (rr in 0...arr.rows) {
+			for (cc in 0...arr.cols) {
+				set2(arr.get2(rr, cc), startRow + rr, startCol + cc);
+			}
+		}
+	}
+	
+	/**
 	 * Gets a value from a 1D index.
 	 * @param	index	The index of the T.
 	 * @return	The T at the index.
 	 */
 	public function get1(index:Int):T {
-		return arr[index];
+		return _arr[index];
 	}
 	
 	/**
@@ -106,7 +131,7 @@ class Array2D<T>{
 	 * @return	The T.
 	 */
 	public function set1(t:T, index:Int):T {
-		return arr[index] = t;
+		return _arr[index] = t;
 	}
 	
 	/**
@@ -116,7 +141,7 @@ class Array2D<T>{
 	 * @return	The T at the index.
 	 */
 	public function get2(row:Int, col:Int):T {
-		return arr[row * cols + col];
+		return _arr[row * cols + col];
 	}
 	
 	/**
@@ -127,7 +152,7 @@ class Array2D<T>{
 	 * @return	The T.
 	 */
 	public function set2(t:T, row:Int, col:Int):T {
-		return arr[row * cols + col] = t;
+		return _arr[row * cols + col] = t;
 	}
 	
 	/**
@@ -136,7 +161,7 @@ class Array2D<T>{
 	 * @return	The new length of the array.
 	 */
 	public function push(t:T):Int {
-		arr[length] = t;
+		_arr[length] = t;
 		return length;
 	}
 	
@@ -145,7 +170,7 @@ class Array2D<T>{
 	 * @return	The removed T.
 	 */
 	public function pop():T {
-		return arr.pop();
+		return _arr.pop();
 	}
 	
 	/**
@@ -158,7 +183,7 @@ class Array2D<T>{
 	public function slice1(startIndex:Int, len:Int):Array2D<T> {
 		var a = new Array2D<T>(cols);
 		var i = 0;
-		while (i++ < len) a.push(arr[startIndex + i]);
+		while (i++ < len) a.push(_arr[startIndex + i]);
 		return a;
 	}
 	
@@ -187,7 +212,7 @@ class Array2D<T>{
 	 */
 	public function copy():Array2D<T> {
 		var a = new Array2D<T>(cols);
-		a.arr = arr.copy();
+		a._arr = _arr.copy();
 		return a;
 	}
 	
@@ -195,7 +220,7 @@ class Array2D<T>{
 	 * Empties the entire array.
 	 */
 	public function clear():Void {
-		arr.splice(0, length);
+		_arr.splice(0, length);
 	}
 	
 	/**
@@ -203,7 +228,7 @@ class Array2D<T>{
 	 * @return	The 1D array representation of the data.
 	 */
 	public function to1DArray():Array<T> {
-		return arr.copy();
+		return _arr.copy();
 	}
 	
 	/**
@@ -233,7 +258,7 @@ class Array2D<T>{
 	 */
 	public static function from1DArray<S>(arr:Array<S>, cols:Int):Array2D<S>{
 		var a = new Array2D<S>(cols);
-		a.arr = arr;
+		a._arr = arr;
 		return a;
 	}
 	
