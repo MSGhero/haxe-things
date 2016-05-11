@@ -156,6 +156,34 @@ class Array2D<T>{
 	}
 	
 	/**
+	 * Gets the row of a 1D index.
+	 * @param	index	A 1D index.
+	 * @return	The row this index is found in.
+	 */
+	public function getRowOf(index:Int):Int {
+		return Std.int(index / cols);
+	}
+	
+	/**
+	 * Gets the column of a 1D index.
+	 * @param	index	A 1D index.
+	 * @return	The column this index is found in.
+	 */
+	public function getColOf(index:Int):Int {
+		return index % cols;
+	}
+	
+	/**
+	 * Gets the 1D index from a row and column.
+	 * @param	row		The row of the index.
+	 * @param	col		The column of the index.
+	 * @return	The index of the row/column pair.
+	 */
+	public function getIndexOf(row:Int, col:Int):Int {
+		return row * cols + col;
+	}
+	
+	/**
 	 * Adds to the end of the array.
 	 * @param	t	The T to add.
 	 * @return	The new length of the array.
@@ -213,6 +241,17 @@ class Array2D<T>{
 	public function copy():Array2D<T> {
 		var a = new Array2D<T>(cols);
 		a._arr = _arr.copy();
+		return a;
+	}
+	
+	/**
+	 * Creates a new Array2D of type S by applying the mapping function to each element of this Array2D of type T.
+	 * @param	mapFunction		Each element of this Array2D is passed into this function, and a new Array2D is created from the returned values.
+	 * @return	The mapped Array2D of type S.
+	 */
+	public function map<S>(mapFunction:T->S):Array2D<S> {
+		var a = new Array2D<S>(cols);
+		a._arr = _arr.map(mapFunction);
 		return a;
 	}
 	
