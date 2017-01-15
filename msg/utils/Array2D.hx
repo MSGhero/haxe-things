@@ -211,7 +211,7 @@ class Array2D<T>{
 	public function slice1(startIndex:Int, len:Int):Array2D<T> {
 		var a = new Array2D<T>(cols);
 		var i = 0;
-		while (i++ < len) a.push(_arr[startIndex + i]);
+		while (i++ < len) a.push(_arr[startIndex + i - 1]);
 		return a;
 	}
 	
