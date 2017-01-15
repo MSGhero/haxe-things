@@ -23,7 +23,7 @@ class Vector2D<T>{
 	// inline everything when the haxe issue is resolved
 	
 	/**
-	 * Creates a new Array2D.
+	 * Creates a new Vector2D.
 	 * @param	length	The immutable length of the vector.
 	 * @param	numCols	The immutable number of columns.
 	 */
@@ -253,9 +253,8 @@ class Vector2D<T>{
 	 * @return	The mapped Vector2D of type S.
 	 */
 	public function map<S>(mapFunction:T->S):Vector2D<S> {
-		var v = new Vector2D<S>(0, cols);
-		v._vec = _vec.map(mapFunction);
-		v.rows = rows;
+		var v = new Vector2D<S>(length, cols);
+		for (i in 0...length) v._vec[i] = mapFunction(_vec[i]);
 		return v;
 	}
 	
