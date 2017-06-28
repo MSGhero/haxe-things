@@ -12,7 +12,7 @@ class Array2D<T>{
 	/** The number of columns. This can be changed at any time. **/
 	public var cols:Int;
 	/** The number of rows. Readonly. **/
-	@:isVar public var rows(get, never):Int;
+	public var rows(get, never):Int;
 	/** Calcs the number of rows. **/
 	inline function get_rows():Int { return Math.ceil(length / cols); }
 	
