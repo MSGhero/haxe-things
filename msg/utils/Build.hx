@@ -108,8 +108,8 @@ class Build {
 	
 	/**
 	 * Parses all json files in a directory and subdirectories and puts them in a "json" StringMap variable.
+	 * Also can be used to parse a single json file if the ".json" extension is included in the path.
 	 * Files without a ".json" extension are ignored.
-	 * Note: requires a Haxe version compiled after May 14, 2015 (after f520bf2, this is after the 3.2.0 release).
 	 * @example
 	 * 		@:build(Build.parseJSONFiles("assets/data/"))
 	 * 		class Main extends Sprite {
@@ -124,8 +124,17 @@ class Build {
 		var a:Array<Expr> = [];
 		
 	#if !display
-		if (pathToFiles.charAt(pathToFiles.length - 1) != "/") pathToFiles = pathToFiles + "/";
-		var files = FileSystem.readDirectory(pathToFiles);
+		var files:Array<String> = null;
+		
+		if (pathToFiles.substr(pathToFiles.length - 5) == ".json") {
+			files = [pathToFiles];
+		}
+		
+		else {
+			if (pathToFiles.charAt(pathToFiles.length - 1) != "/") pathToFiles = pathToFiles + "/";
+			files = FileSystem.readDirectory(pathToFiles);
+		}
+		
 		var success = true;
 		
 		while (files.length > 0) {

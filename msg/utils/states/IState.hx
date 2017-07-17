@@ -10,7 +10,7 @@ interface IState {
   /**
    * Name of the state, defined internally.
    */
-  var name(default, null):String;
+  var name(get, never):String;
   
   /**
    * Call to set up the state's initial...state.

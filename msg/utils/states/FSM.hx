@@ -5,22 +5,22 @@ import haxe.ds.StringMap;
  * Rinky-dink finite-state machine.
  * @author MSGHero
  */
-class FSM{
+class FSM {
 	
 	var previous:IState;
 	var current:IState;
 	
 	/**
-	 * Gets the previous state's name if it exists.
+	 * Gets the previous state, if it exists.
 	 * @return
 	 */
-	public inline function getPrev():String { return previous == null ? "null" : previous.name; };
+	public inline function getPrev():IState { return previous; };
 	
 	/**
-	 * Gets the current state's name if it exists.
+	 * Gets the current state, if it exists.
 	 * @return
 	 */
-	public inline function getCurr():String { return current == null ? "null" : current.name; };
+	public inline function getCurr():IState { return current; };
 	
 	var stateMap:StringMap<IState>;
 	var fromMap:StringMap<Array<String>>;
@@ -143,7 +143,7 @@ class FSM{
 		}
 		
 		else if (current.name == newState) {
-			// Lib.trace('Already in the ${current.name} state.');
+			//
 		}
 		
 		else if (canSwapFrom(newState, current.name)) {
@@ -154,7 +154,7 @@ class FSM{
 		}
 		
 		else {
-			// Lib.trace('Cannot switch from ${current.name} to ${newState}.');
+			throw 'Cannot switch from State ${current.name} to State ${newState}.';
 		}
 	}
 }

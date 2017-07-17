@@ -4,7 +4,7 @@ package msg.utils.states;
  * Push-down automata blah blah Finite State Machine
  * @author MSGHero
  */
-class StackFSM extends FSM{
+class StackFSM extends FSM {
 
 	/** The stack backing the fsm's current states. */
 	var stack:Stack<String>;
@@ -50,7 +50,7 @@ class StackFSM extends FSM{
 		}
 		
 		else {
-			// error
+			throw 'Cannot push State ${newState} onto State ${current.name}.';
 		}
 	}
 	
@@ -123,7 +123,7 @@ class StackFSM extends FSM{
 		}
 		
 		else {
-			// error
+			throw 'Cannot switch from State ${current.name} to State ${newState}.';
 		}
 	}
 }
