@@ -1,41 +1,28 @@
 package msg.utils;
 
-import openfl.Vector;
+import haxe.ds.Vector;
 
 /**
  * A 2D vector backed by a 1D vector.
- * Better than Array2D when the length and number of columns never change.
- * Works out of the box for vectors of type Int, Float, Bool, and Dynamic.
- * 
- * To get a Vector2D typed to other classes, you'll have to create a new abstract class with Vector2D as the core class.
- * Then, you have to implement the new vector class, which looks like the inner classes here.
- * You can also have it type to Int/Float/Bool/etc by reimplementing the respective @:to converter.
- * 
- * @example
- * 	@:multitype(T)
- * 	@:forward
- * 	abstract MyVector<T>(Vector2D<T>) {
- * 		
- * 		public function new(length:Int, numCols:Int);
- * 		
- * 		// create a MyVector (Vector2D) of type MyClass
- * 		// MyClassV2D must be defined as Int/Float/Bool/etc are below
- *		@:to static function toMyClass<T:MyClass>(t:IV2D<T>, length:Int, numCols:Int):MyClassV2D {
- * 			return new MyClassV2D(length, numCols);
- * 		}
- * 		
- * 		// create a MyVector (Vector2D) of type Int
- *		@:to static function toInt<T:Int>(t:IV2D<T>, length:Int, numCols:Int):Vector2D<Int> {
- * 			return new Vector2D<Int>(length, numCols);
- * 		}
- * 	}
- * 
+ * Better than Array2D when the length and number of rows and columns never change.
  * @author MSGHero
  */
 
 @:multiType(T)
-@:forward
+// @:forward or no?
 abstract Vector2D<T>(IV2D<T>) {
+	
+	/** The number of columns. Readonly. **/
+	public var cols(get, never):Int;
+	inline function get_cols():Int { return this.cols; }
+	
+	/** The number of rows. Readonly. **/
+	public var rows(get, never):Int;
+	inline function get_rows():Int { return this.rows; }
+	
+	/** The true length of the vector, not just rows * cols. **/
+	public var length(get, never):Int;
+	inline function get_length():Int { return this.length; }
 	
 	/**
 	 * Creates a new Vector2D of the specified type.
@@ -43,6 +30,226 @@ abstract Vector2D<T>(IV2D<T>) {
 	 * @param	numCols	The immutable number of columns, from which the immutable number of rows is determined.
 	 */
 	public function new(length:Int, numCols:Int);
+	
+	/**
+	 * The core vector's iterator.
+	 */
+	public inline function iterator():Iterator<T> {
+		return this.iterator();
+	}
+	
+	/**
+	 * The vector's 2D iterator.
+	 * Usage:
+	 * @example
+	 * for (rc in myV2D.iterator2()) {
+	 *     trace(rc.index, rc.row, rc.col);
+	 * }
+	 */
+	public inline function iterator2():V2DIterator {
+		return this.iterator2();
+	}
+	
+	/**
+	 * Clears the vector (fills with false, 0, or null) and fills it with the supplied T.
+	 * @param	t	What to fill the vector with.
+	 * @param	len	How many Ts to add.
+	 */
+	public inline function fill1(t:T, len:Int):Void {
+		this.fill1(t, len);
+	}
+	
+	/**
+	 * Clears the vector and fills it with the supplied T. Changes the number of columns.
+	 * @param	t		What to fill the vector with.
+	 * @param	numRows	How many rows of Ts to add.
+	 * @param	numCols	How many cols of Ts to add. The new number of columns gets set to this value.
+	 */
+	public inline function fill2(t:T, numRows:Int, numCols:Int):Void {
+		this.fill2(t, numRows, numCols);
+	}
+	
+	/**
+	 * Fills the specified 1D range with T.
+	 * @param	t		What to fill the vector with.
+	 * @param	start	The starting index.
+	 * @param	len		How many Ts to add.
+	 */
+	public inline function fillAt1(t:T, start:Int, len:Int):Void {
+		this.fillAt1(t, start, len);
+	}
+	
+	/**
+	 * Fills the specified 2D range with T.
+	 * @param	t			What to fill the vector with.
+	 * @param	startRow	The starting row.
+	 * @param	startCol	The starting col.
+	 * @param	numRows		How many rows of Ts to add.
+	 * @param	numCols		How many cols of Ts to add.
+	 */
+	public inline function fillAt2(t:T, startRow:Int, startCol:Int, numRows:Int, numCols:Int):Void {
+		this.fillAt2(t, startRow, startCol, numRows, numCols);
+	}
+	
+	/**
+	 * Fills the vector with a 1D vector from the supplied index.
+	 * Overwrites existing data.
+	 * @param	vec		The 1D vector to overwrite data with.
+	 * @param	index	The index to start copying data to.
+	 */
+	public inline function fillWith1(vec:Vector<T>, index:Int):Void {
+		this.fillWith1(vec, index);
+	}
+	
+	/**
+	 * Fills the vector with a Vector2D from the supplied row and col.
+	 * @param	vec			The Vector2D to overwrite data with.
+	 * @param	startRow	The row to start copying data to.
+	 * @param	startCol	The col to start copying data to.
+	 */
+	public inline function fillWith2(vec:Vector2D<T>, startRow:Int, startCol:Int):Void {
+		this.fillWith2(cast vec, startRow, startCol);
+	}
+	
+	/**
+	 * Gets a value from a 1D index. Can also use array access.
+	 * @param	index	The index of the T.
+	 * @return	The T at the index.
+	 */
+	@:arrayAccess public inline function get1(index:Int):T {
+		return this.get1(index);
+	}
+	
+	/**
+	 * Sets a value from a 1D index. Can also use array access.
+	 * @param	t		What to set at the index.
+	 * @param	index	The index of the T.
+	 * @return	The T.
+	 */
+	public inline function set1(t:T, index:Int):T {
+		return this.set1(t, index);
+	}
+	
+	// the real array access setter, since parameter order matters
+	@:arrayAccess inline function setWithArrayAccess(index:Int, t:T):T {
+		return this.set1(t, index);
+	}
+	
+	/**
+	 * Gets a value from a 2D index.
+	 * @param	row	The row of the T.
+	 * @param	col	The col of the T.
+	 * @return	The T at the index.
+	 */
+	public inline function get2(row:Int, col:Int):T {
+		return this.get2(row, col);
+	}
+	
+	/**
+	 * Sets a value from a 2D index.
+	 * @param	t	What to set at the index.
+	 * @param	row	The row of the T.
+	 * @param	col	The col of the T.
+	 * @return	The T.
+	 */
+	public inline function set2(t:T, row:Int, col:Int):T {
+		return this.set2(t, row, col);
+	}
+	
+	/**
+	 * Gets the row of a 1D index.
+	 * @param	index	A 1D index.
+	 * @return	The row this index is found in.
+	 */
+	public inline function getRowOf(index:Int):Int {
+		return this.getRowOf(index);
+	}
+	
+	/**
+	 * Gets the column of a 1D index.
+	 * @param	index	A 1D index.
+	 * @return	The column this index is found in.
+	 */
+	public inline function getColOf(index:Int):Int {
+		return this.getColOf(index);
+	}
+	
+	/**
+	 * Gets the 1D index from a row and column.
+	 * @param	row		The row of the index.
+	 * @param	col		The column of the index.
+	 * @return	The index of the row/column pair.
+	 */
+	public inline function getIndexOf(row:Int, col:Int):Int {
+		return this.getIndexOf(row, col);
+	}
+	
+	/**
+	 * Creates a shallow copy of this Vector2D using a 1D range.
+	 * The new vector has the same number of columns as this one, and its length is set to the input parameter.
+	 * @param	startIndex	The starting index.
+	 * @param	len			How many Ts to copy, also the length of the new Vector2D.
+	 * @return	The new Vector2D.
+	 */
+	public inline function slice1(startIndex:Int, len:Int):Vector2D<T> {
+		return cast this.slice1(startIndex, len);
+	}
+	
+	/**
+	 * Creates a shallow copy of this Vector2D using a 2D range.
+	 * The number of columns in the new vector is equal to numCols, and the length is numRows * numCols.
+	 * @param	startRow	The starting row.
+	 * @param	startCol	The starting col.
+	 * @param	numRows		How many rows to copy.
+	 * @param	numCols		How many cols to copy. Also the number of cols of the output Vector2D.
+	 * @return	The new Vector2D.
+	 */
+	public inline function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<T> {
+		return cast this.slice2(startRow, startCol, numRows, numCols);
+	}
+	
+	/**
+	 * Produces a shallow copy of the entire Vector2D with the same number of columns.
+	 * @return	The new Vector2D.
+	 */
+	public inline function copy():Vector2D<T> {
+		return cast this.copy();
+	}
+	
+	/**
+	 * Fills the entire Vector2D with the appropriate default value for the type.
+	 * (e.g. false, 0, null)
+	 */
+	public inline function clear():Void {
+		this.clear();
+	}
+	
+	/**
+	 * @return	The prettified string of the Vector2D.
+	 */
+	public inline function toString():String {
+		return this.toString();
+	}
+	
+	@:from static inline function fromBoolV2D<T>(t:BoolV2D):Vector2D<T> {
+		return cast t;
+	}
+	
+	@:from static inline function fromIntV2D<T>(t:IntV2D):Vector2D<T> {
+		return cast t;
+	}
+	
+	@:from static inline function fromFloatV2D<T>(t:FloatV2D):Vector2D<T> {
+		return cast t;
+	}
+	
+	@:from static inline function fromStringV2D<T>(t:StringV2D):Vector2D<T> {
+		return cast t;
+	}
+	
+	@:from static inline function fromObjV2D<T>(t:ObjV2D<T>):Vector2D<T> {
+		return cast t;
+	}
 	
 	@:to static inline function toBoolV2D<T:Bool>(t:IV2D<T>, length:Int, numCols:Int):BoolV2D {
 		return new BoolV2D(length, numCols);
@@ -60,8 +267,8 @@ abstract Vector2D<T>(IV2D<T>) {
 		return new StringV2D(length, numCols);
 	}
 	
-	@:to static inline function toObjV2D<Dynamic>(t:IV2D<Dynamic>, length:Int, numCols:Int):ObjV2D {
-		return new ObjV2D(length, numCols);
+	@:to static inline function toObjV2D<T>(t:IV2D<T>, length:Int, numCols:Int):ObjV2D<T> {
+		return new ObjV2D<T>(length, numCols);
 	}
 }
 
@@ -74,13 +281,17 @@ private class BoolV2D implements IV2D<Bool> {
 	inline function get_length():Int { return _vec.length; }
 	
 	public function new(length:Int, numCols:Int) {
-		_vec = new Vector<Bool>(length, true);
+		_vec = new Vector<Bool>(length);
 		cols = numCols;
 		rows = Math.ceil(length / cols);
 	}
 	
 	public function iterator():Iterator<Bool> {
-		return _vec.iterator();
+		return new V1DIterator(_vec);
+	}
+	
+	public function iterator2():V2DIterator {
+		return new V2DIterator(rows, cols);
 	}
 	
 	public function fill1(t:Bool, len:Int):Void {
@@ -118,7 +329,7 @@ private class BoolV2D implements IV2D<Bool> {
 		while (i < vec.length) set1(vec[i], index + i++);
 	}
 	
-	public function fillWith2(vec:Vector2D<Bool>, startRow:Int, startCol:Int):Void {
+	public function fillWith2(vec:IV2D<Bool>, startRow:Int, startCol:Int):Void {
 		for (rr in 0...vec.rows) {
 			for (cc in 0...vec.cols) {
 				set2(vec.get2(rr, cc), startRow + rr, startCol + cc);
@@ -154,15 +365,15 @@ private class BoolV2D implements IV2D<Bool> {
 		return row * cols + col;
 	}
 	
-	public function slice1(startIndex:Int, len:Int):Vector2D<Bool> {
-		var v = new Vector2D<Bool>(len, cols);
+	public function slice1(startIndex:Int, len:Int):IV2D<Bool> {
+		var v = new BoolV2D(len, cols);
 		var i = 0;
 		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
 		return v;
 	}
 	
-	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<Bool> {
-		var v = new Vector2D<Bool>(numCols * numRows, numCols);
+	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<Bool> {
+		var v = new BoolV2D(numCols * numRows, numCols);
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				v.set2(get2(startRow + rr, startCol + cc), rr, cc);
@@ -208,13 +419,17 @@ private class IntV2D implements IV2D<Int> {
 	inline function get_length():Int { return _vec.length; }
 	
 	public function new(length:Int, numCols:Int) {
-		_vec = new Vector<Int>(length, true);
+		_vec = new Vector<Int>(length);
 		cols = numCols;
 		rows = Math.ceil(length / cols);
 	}
 	
 	public function iterator():Iterator<Int> {
-		return _vec.iterator();
+		return new V1DIterator(_vec);
+	}
+	
+	public function iterator2():V2DIterator {
+		return new V2DIterator(rows, cols);
 	}
 	
 	public function fill1(t:Int, len:Int):Void {
@@ -252,7 +467,7 @@ private class IntV2D implements IV2D<Int> {
 		while (i < vec.length) set1(vec[i], index + i++);
 	}
 	
-	public function fillWith2(vec:Vector2D<Int>, startRow:Int, startCol:Int):Void {
+	public function fillWith2(vec:IV2D<Int>, startRow:Int, startCol:Int):Void {
 		for (rr in 0...vec.rows) {
 			for (cc in 0...vec.cols) {
 				set2(vec.get2(rr, cc), startRow + rr, startCol + cc);
@@ -288,15 +503,15 @@ private class IntV2D implements IV2D<Int> {
 		return row * cols + col;
 	}
 	
-	public function slice1(startIndex:Int, len:Int):Vector2D<Int> {
-		var v = new Vector2D<Int>(len, cols);
+	public function slice1(startIndex:Int, len:Int):IV2D<Int> {
+		var v = new IntV2D(len, cols);
 		var i = 0;
 		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
 		return v;
 	}
 	
-	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<Int> {
-		var v = new Vector2D<Int>(numCols * numRows, numCols);
+	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<Int> {
+		var v = new IntV2D(numCols * numRows, numCols);
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				v.set2(get2(startRow + rr, startCol + cc), rr, cc);
@@ -342,13 +557,17 @@ private class FloatV2D implements IV2D<Float> {
 	inline function get_length():Int { return _vec.length; }
 	
 	public function new(length:Int, numCols:Int) {
-		_vec = new Vector<Float>(length, true);
+		_vec = new Vector<Float>(length);
 		cols = numCols;
 		rows = Math.ceil(length / cols);
 	}
 	
 	public function iterator():Iterator<Float> {
-		return _vec.iterator();
+		return new V1DIterator(_vec);
+	}
+	
+	public function iterator2():V2DIterator {
+		return new V2DIterator(rows, cols);
 	}
 	
 	public function fill1(t:Float, len:Int):Void {
@@ -386,7 +605,7 @@ private class FloatV2D implements IV2D<Float> {
 		while (i < vec.length) set1(vec[i], index + i++);
 	}
 	
-	public function fillWith2(vec:Vector2D<Float>, startRow:Int, startCol:Int):Void {
+	public function fillWith2(vec:IV2D<Float>, startRow:Int, startCol:Int):Void {
 		for (rr in 0...vec.rows) {
 			for (cc in 0...vec.cols) {
 				set2(vec.get2(rr, cc), startRow + rr, startCol + cc);
@@ -422,15 +641,15 @@ private class FloatV2D implements IV2D<Float> {
 		return row * cols + col;
 	}
 	
-	public function slice1(startIndex:Int, len:Int):Vector2D<Float> {
-		var v = new Vector2D<Float>(len, cols);
+	public function slice1(startIndex:Int, len:Int):IV2D<Float> {
+		var v = new FloatV2D(len, cols);
 		var i = 0;
 		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
 		return v;
 	}
 	
-	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<Float> {
-		var v = new Vector2D<Float>(numCols * numRows, numCols);
+	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<Float> {
+		var v = new FloatV2D(numCols * numRows, numCols);
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				v.set2(get2(startRow + rr, startCol + cc), rr, cc);
@@ -476,13 +695,17 @@ private class StringV2D implements IV2D<String> {
 	inline function get_length():Int { return _vec.length; }
 	
 	public function new(length:Int, numCols:Int) {
-		_vec = new Vector<String>(length, true);
+		_vec = new Vector<String>(length);
 		cols = numCols;
 		rows = Math.ceil(length / cols);
 	}
 	
 	public function iterator():Iterator<String> {
-		return _vec.iterator();
+		return new V1DIterator(_vec);
+	}
+	
+	public function iterator2():V2DIterator {
+		return new V2DIterator(rows, cols);
 	}
 	
 	public function fill1(t:String, len:Int):Void {
@@ -520,7 +743,7 @@ private class StringV2D implements IV2D<String> {
 		while (i < vec.length) set1(vec[i], index + i++);
 	}
 	
-	public function fillWith2(vec:Vector2D<String>, startRow:Int, startCol:Int):Void {
+	public function fillWith2(vec:IV2D<String>, startRow:Int, startCol:Int):Void {
 		for (rr in 0...vec.rows) {
 			for (cc in 0...vec.cols) {
 				set2(vec.get2(rr, cc), startRow + rr, startCol + cc);
@@ -556,15 +779,15 @@ private class StringV2D implements IV2D<String> {
 		return row * cols + col;
 	}
 	
-	public function slice1(startIndex:Int, len:Int):Vector2D<String> {
-		var v = new Vector2D<String>(len, cols);
+	public function slice1(startIndex:Int, len:Int):IV2D<String> {
+		var v = new StringV2D(len, cols);
 		var i = 0;
 		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
 		return v;
 	}
 	
-	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<String> {
-		var v = new Vector2D<String>(numCols * numRows, numCols);
+	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<String> {
+		var v = new StringV2D(numCols * numRows, numCols);
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				v.set2(get2(startRow + rr, startCol + cc), rr, cc);
@@ -601,7 +824,7 @@ private class StringV2D implements IV2D<String> {
 	}
 }
 
-private class ObjV2D implements IV2D<Dynamic> {
+private class ObjV2D<T:Dynamic> implements IV2D<T> {
 
 	var _vec:Vector<Dynamic>;
 	public var cols(default, null):Int;
@@ -610,16 +833,20 @@ private class ObjV2D implements IV2D<Dynamic> {
 	inline function get_length():Int { return _vec.length; }
 	
 	public function new(length:Int, numCols:Int) {
-		_vec = new Vector<Dynamic>(length, true);
+		_vec = new Vector<Dynamic>(length);
 		cols = numCols;
 		rows = Math.ceil(length / cols);
 	}
 	
-	public function iterator():Iterator<Dynamic> {
-		return _vec.iterator();
+	public function iterator():Iterator<T> {
+		return new V1DIterator(_vec);
 	}
 	
-	public function fill1(t:Dynamic, len:Int):Void {
+	public function iterator2():V2DIterator {
+		return new V2DIterator(rows, cols);
+	}
+	
+	public function fill1(t:T, len:Int):Void {
 		
 		for (i in 0...len) {
 			_vec[i] = t;
@@ -630,18 +857,18 @@ private class ObjV2D implements IV2D<Dynamic> {
 		}
 	}
 	
-	public function fill2(t:Dynamic, numRows:Int, numCols:Int):Void {
+	public function fill2(t:T, numRows:Int, numCols:Int):Void {
 		fill1(t, numRows * numCols);
 	}
 	
-	public function fillAt1(t:Dynamic, start:Int, len:Int):Void {
+	public function fillAt1(t:T, start:Int, len:Int):Void {
 		var i = 0;
 		while (i++ < len) {
 			_vec[start + i] = t;
 		}
 	}
 	
-	public function fillAt2(t:Dynamic, startRow:Int, startCol:Int, numRows:Int, numCols:Int):Void {
+	public function fillAt2(t:T, startRow:Int, startCol:Int, numRows:Int, numCols:Int):Void {
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				set2(t, startRow + rr, startCol + cc);
@@ -649,12 +876,12 @@ private class ObjV2D implements IV2D<Dynamic> {
 		}
 	}
 	
-	public function fillWith1(vec:Vector<Dynamic>, index:Int):Void {
+	public function fillWith1(vec:Vector<T>, index:Int):Void {
 		var i = 0;
 		while (i < vec.length) set1(vec[i], index + i++);
 	}
 	
-	public function fillWith2(vec:Vector2D<Dynamic>, startRow:Int, startCol:Int):Void {
+	public function fillWith2(vec:IV2D<T>, startRow:Int, startCol:Int):Void {
 		for (rr in 0...vec.rows) {
 			for (cc in 0...vec.cols) {
 				set2(vec.get2(rr, cc), startRow + rr, startCol + cc);
@@ -662,19 +889,19 @@ private class ObjV2D implements IV2D<Dynamic> {
 		}
 	}
 	
-	public function get1(index:Int):Dynamic {
+	public function get1(index:Int):T {
 		return _vec[index];
 	}
 	
-	public function set1(t:Dynamic, index:Int):Dynamic {
+	public function set1(t:T, index:Int):T {
 		return _vec[index] = t;
 	}
 	
-	public function get2(row:Int, col:Int):Dynamic {
+	public function get2(row:Int, col:Int):T {
 		return _vec[row * cols + col];
 	}
 	
-	public function set2(t:Dynamic, row:Int, col:Int):Dynamic {
+	public function set2(t:T, row:Int, col:Int):T {
 		return _vec[row * cols + col] = t;
 	}
 	
@@ -690,15 +917,15 @@ private class ObjV2D implements IV2D<Dynamic> {
 		return row * cols + col;
 	}
 	
-	public function slice1(startIndex:Int, len:Int):Vector2D<Dynamic> {
-		var v = new Vector2D<Dynamic>(len, cols);
+	public function slice1(startIndex:Int, len:Int):IV2D<T> {
+		var v = new ObjV2D<T>(len, cols);
 		var i = 0;
 		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
 		return v;
 	}
 	
-	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<Dynamic> {
-		var v = new Vector2D<Dynamic>(numCols * numRows, numCols);
+	public function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<T> {
+		var v = new ObjV2D<T>(numCols * numRows, numCols);
 		for (rr in 0...numRows) {
 			for (cc in 0...numCols) {
 				v.set2(get2(startRow + rr, startCol + cc), rr, cc);
@@ -707,8 +934,8 @@ private class ObjV2D implements IV2D<Dynamic> {
 		return v;
 	}
 	
-	public function copy():IV2D<Dynamic> {
-		var v = new ObjV2D(0, cols);
+	public function copy():IV2D<T> {
+		var v = new ObjV2D<T>(0, cols);
 		v._vec = _vec.copy();
 		v.rows = rows;
 		return v;
@@ -737,155 +964,79 @@ private class ObjV2D implements IV2D<Dynamic> {
 
 private interface IV2D<T> {
 	
-	/** The number of columns. Readonly. **/
 	var cols(default, null):Int;
-	/** The number of rows. Readonly. **/
 	var rows(default, null):Int;
-	/** The true length of the vector, not just rows * cols. **/
 	var length(get, never):Int;
 	
-	/**
-	 * The core vector's iterator.
-	 */
 	function iterator():Iterator<T>;
-	
-	/**
-	 * Clears the vector (fills with false, 0, or null) and fills it with the supplied T.
-	 * @param	t	What to fill the vector with.
-	 * @param	len	How many Ts to add.
-	 */
+	function iterator2():V2DIterator;
 	function fill1(t:T, len:Int):Void;
-	
-	/**
-	 * Clears the vector and fills it with the supplied T. Changes the number of columns.
-	 * @param	t		What to fill the vector with.
-	 * @param	numRows	How many rows of Ts to add.
-	 * @param	numCols	How many cols of Ts to add. The new number of columns gets set to this value.
-	 */
 	function fill2(t:T, numRows:Int, numCols:Int):Void;
-	
-	/**
-	 * Fills the specified 1D range with T.
-	 * @param	t		What to fill the vector with.
-	 * @param	start	The starting index.
-	 * @param	len		How many Ts to add.
-	 */
 	function fillAt1(t:T, start:Int, len:Int):Void;
-	
-	/**
-	 * Fills the specified 2D range with T.
-	 * @param	t			What to fill the vector with.
-	 * @param	startRow	The starting row.
-	 * @param	startCol	The starting col.
-	 * @param	numRows		How many rows of Ts to add.
-	 * @param	numCols		How many cols of Ts to add.
-	 */
 	function fillAt2(t:T, startRow:Int, startCol:Int, numRows:Int, numCols:Int):Void;
-	
-	/**
-	 * Fills the vector with a 1D vector from the supplied index.
-	 * Overwrites existing data.
-	 * @param	vec		The 1D vector to overwrite data with.
-	 * @param	index	The index to start copying data to.
-	 */
 	function fillWith1(vec:Vector<T>, index:Int):Void;
-	
-	/**
-	 * Fills the vector with a Vector2D from the supplied row and col.
-	 * @param	arr			The Vector2D to overwrite data with.
-	 * @param	startRow	The row to start copying data to.
-	 * @param	startCol	The col to start copying data to.
-	 */
-	function fillWith2(vec:Vector2D<T>, startRow:Int, startCol:Int):Void;
-	
-	/**
-	 * Gets a value from a 1D index.
-	 * @param	index	The index of the T.
-	 * @return	The T at the index.
-	 */
+	function fillWith2(vec:IV2D<T>, startRow:Int, startCol:Int):Void;
 	function get1(index:Int):T;
-	
-	/**
-	 * Sets a value from a 1D index.
-	 * @param	t		What to set at the index.
-	 * @param	index	The index of the T.
-	 * @return	The T.
-	 */
 	function set1(t:T, index:Int):T;
-	
-	/**
-	 * Gets a value from a 2D index.
-	 * @param	row	The row of the T.
-	 * @param	col	The col of the T.
-	 * @return	The T at the index.
-	 */
 	function get2(row:Int, col:Int):T;
-	
-	/**
-	 * Sets a value from a 2D index.
-	 * @param	t	What to set at the index.
-	 * @param	row	The row of the T.
-	 * @param	col	The col of the T.
-	 * @return	The T.
-	 */
 	function set2(t:T, row:Int, col:Int):T;
-	
-	/**
-	 * Gets the row of a 1D index.
-	 * @param	index	A 1D index.
-	 * @return	The row this index is found in.
-	 */
 	function getRowOf(index:Int):Int;
-	
-	/**
-	 * Gets the column of a 1D index.
-	 * @param	index	A 1D index.
-	 * @return	The column this index is found in.
-	 */
 	function getColOf(index:Int):Int;
-	
-	/**
-	 * Gets the 1D index from a row and column.
-	 * @param	row		The row of the index.
-	 * @param	col		The column of the index.
-	 * @return	The index of the row/column pair.
-	 */
 	function getIndexOf(row:Int, col:Int):Int;
-	
-	/**
-	 * Creates a shallow copy of this Vector2D using a 1D range.
-	 * The new vector has the same number of columns as this one, and its length is set to the input parameter.
-	 * @param	startIndex	The starting index.
-	 * @param	len			How many Ts to copy, also the length of the new Vector2D.
-	 * @return	The new Vector2D.
-	 */
-	function slice1(startIndex:Int, len:Int):Vector2D<T>;
-	
-	/**
-	 * Creates a shallow copy of this Vector2D using a 2D range.
-	 * The number of columns in the new vector is equal to numCols, and the length is numRows * numCols.
-	 * @param	startRow	The starting row.
-	 * @param	startCol	The starting col.
-	 * @param	numRows		How many rows to copy.
-	 * @param	numCols		How many cols to copy. Also the number of cols of the output Vector2D.
-	 * @return	The new Vector2D.
-	 */
-	function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):Vector2D<T>;
-	
-	/**
-	 * Produces a shallow copy of the entire Vector2D with the same number of columns.
-	 * @return	The new Vector2D.
-	 */
+	function slice1(startIndex:Int, len:Int):IV2D<T>;
+	function slice2(startRow:Int, startCol:Int, numRows:Int, numCols:Int):IV2D<T>;
 	function copy():IV2D<T>;
-	
-	/**
-	 * Fills the entire Vector2D with the appropriate default value for the type.
-	 * (e.g. false, 0, null)
-	 */
 	function clear():Void;
-	
-	/**
-	 * @return	The prettified string of the Vector2D.
-	 */
 	function toString():String;
+}
+
+private class V1DIterator<T> {
+	
+	var i:Int = 0;
+	var v2:Vector<T> = null;
+	
+	public inline function new(v2:Vector<T>) {
+		this.v2 = v2;
+	}
+	
+	public inline function hasNext():Bool {
+		return i < v2.length;
+	}
+	
+	public inline function next():T {
+		return v2[i++];
+	}
+}
+
+private class V2DIterator {
+	
+	var rows:Int = 0;
+	var cols:Int = 0;
+	var i:Int = 0;
+	
+	public inline function new(rows:Int, cols:Int) {
+		this.rows = rows;
+		this.cols = cols;
+	}
+	
+	public inline function hasNext():Bool {
+		return i < rows * cols;
+	}
+	
+	public inline function next():V2DIteratorObject {
+		return new V2DIteratorObject(i++, cols);
+	}
+}
+
+private class V2DIteratorObject {
+	
+	public var index(default, null):Int;
+	public var row(default, null):Int;
+	public var col(default, null):Int;
+	
+	public inline function new(index:Int, cols:Int) {
+		this.index = index;
+		row = Std.int(index / cols);
+		col = index % cols;
+	}
 }
