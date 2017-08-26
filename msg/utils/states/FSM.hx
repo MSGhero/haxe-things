@@ -9,6 +9,7 @@ class FSM {
 	
 	var previous:IState;
 	var current:IState;
+	var next:IState;
 	
 	/**
 	 * Gets the previous state, if it exists.
@@ -21,6 +22,13 @@ class FSM {
 	 * @return
 	 */
 	public inline function getCurr():IState { return current; };
+	
+	/**
+	 * Gets the next state, if it exists.
+	 * This will only exist during state transitions.
+	 * @return
+	 */
+	public inline function getNext():IState { return next; };
 	
 	var stateMap:StringMap<IState>;
 	var fromMap:StringMap<Array<String>>;
@@ -38,7 +46,7 @@ class FSM {
 	public function reset():Void {
 		stateMap = new StringMap<IState>();
 		fromMap = new StringMap<Array<String>>();
-		current = previous = null;
+		current = previous = next = null;
 	}
 	
 	/**
@@ -48,7 +56,7 @@ class FSM {
 	public function destroy():Void {
 		stateMap = null;
 		fromMap = null;
-		current = previous = null;
+		current = previous = next = null;
 	}
 	
 	/**
@@ -147,9 +155,11 @@ class FSM {
 		}
 		
 		else if (canSwapFrom(newState, current.name)) {
+			next = ns;
 			current.exit();
 			previous = current;
 			current = ns;
+			next = null;
 			current.enter();
 		}
 		

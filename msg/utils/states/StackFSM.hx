@@ -42,9 +42,15 @@ class StackFSM extends FSM {
 		
 		else if (canSwapFrom(newState, current.name)) {
 			
+			next = ns;
+			
 			current.suspend();
+			
+			next = null;
+			
 			previous = current;
 			current = ns;
+			
 			stack.push(newState);
 			current.enter();
 		}
@@ -61,8 +67,13 @@ class StackFSM extends FSM {
 	 */
 	public function pop():String {
 		
+		next = previous;
+		
 		current.exit();
+		
 		previous = current;
+		next = null;
+		
 		var old = stack.popEntirely();
 		
 		current = stateMap.get(stack.peek());
@@ -113,9 +124,13 @@ class StackFSM extends FSM {
 		
 		else if (canSwapFrom(newState, current.name)) {
 			
+			next = ns;
+			
 			current.exit();
 			previous = current;
 			stack.popEntirely();
+			
+			next = null;
 			
 			current = ns;
 			stack.push(newState);
