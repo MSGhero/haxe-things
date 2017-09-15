@@ -325,8 +325,7 @@ private class BoolV2D implements IV2D<Bool> {
 	}
 	
 	public function fillWith1(vec:Vector<Bool>, index:Int):Void {
-		var i = 0;
-		while (i < vec.length) set1(vec[i], index + i++);
+		Vector.blit(vec, 0, _vec, index, vec.length);
 	}
 	
 	public function fillWith2(vec:IV2D<Bool>, startRow:Int, startCol:Int):Void {
@@ -367,8 +366,7 @@ private class BoolV2D implements IV2D<Bool> {
 	
 	public function slice1(startIndex:Int, len:Int):IV2D<Bool> {
 		var v = new BoolV2D(len, cols);
-		var i = 0;
-		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
+		Vector.blit(_vec, startIndex, v._vec, 0, len);
 		return v;
 	}
 	
@@ -463,8 +461,7 @@ private class IntV2D implements IV2D<Int> {
 	}
 	
 	public function fillWith1(vec:Vector<Int>, index:Int):Void {
-		var i = 0;
-		while (i < vec.length) set1(vec[i], index + i++);
+		Vector.blit(vec, 0, _vec, index, vec.length);
 	}
 	
 	public function fillWith2(vec:IV2D<Int>, startRow:Int, startCol:Int):Void {
@@ -505,8 +502,7 @@ private class IntV2D implements IV2D<Int> {
 	
 	public function slice1(startIndex:Int, len:Int):IV2D<Int> {
 		var v = new IntV2D(len, cols);
-		var i = 0;
-		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
+		Vector.blit(_vec, startIndex, v._vec, 0, len);
 		return v;
 	}
 	
@@ -601,8 +597,7 @@ private class FloatV2D implements IV2D<Float> {
 	}
 	
 	public function fillWith1(vec:Vector<Float>, index:Int):Void {
-		var i = 0;
-		while (i < vec.length) set1(vec[i], index + i++);
+		Vector.blit(vec, 0, _vec, index, vec.length);
 	}
 	
 	public function fillWith2(vec:IV2D<Float>, startRow:Int, startCol:Int):Void {
@@ -643,8 +638,7 @@ private class FloatV2D implements IV2D<Float> {
 	
 	public function slice1(startIndex:Int, len:Int):IV2D<Float> {
 		var v = new FloatV2D(len, cols);
-		var i = 0;
-		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
+		Vector.blit(_vec, startIndex, v._vec, 0, len);
 		return v;
 	}
 	
@@ -739,8 +733,7 @@ private class StringV2D implements IV2D<String> {
 	}
 	
 	public function fillWith1(vec:Vector<String>, index:Int):Void {
-		var i = 0;
-		while (i < vec.length) set1(vec[i], index + i++);
+		Vector.blit(vec, 0, _vec, index, vec.length);
 	}
 	
 	public function fillWith2(vec:IV2D<String>, startRow:Int, startCol:Int):Void {
@@ -781,8 +774,7 @@ private class StringV2D implements IV2D<String> {
 	
 	public function slice1(startIndex:Int, len:Int):IV2D<String> {
 		var v = new StringV2D(len, cols);
-		var i = 0;
-		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
+		Vector.blit(_vec, startIndex, v._vec, 0, len);
 		return v;
 	}
 	
@@ -877,8 +869,7 @@ private class ObjV2D<T:Dynamic> implements IV2D<T> {
 	}
 	
 	public function fillWith1(vec:Vector<T>, index:Int):Void {
-		var i = 0;
-		while (i < vec.length) set1(vec[i], index + i++);
+		Vector.blit(vec, 0, cast _vec, index, vec.length);
 	}
 	
 	public function fillWith2(vec:IV2D<T>, startRow:Int, startCol:Int):Void {
@@ -919,8 +910,7 @@ private class ObjV2D<T:Dynamic> implements IV2D<T> {
 	
 	public function slice1(startIndex:Int, len:Int):IV2D<T> {
 		var v = new ObjV2D<T>(len, cols);
-		var i = 0;
-		while (i++ < len) v.set1(_vec[startIndex + i - 1], i - 1);
+		Vector.blit(_vec, startIndex, v._vec, 0, len);
 		return v;
 	}
 	
@@ -962,7 +952,7 @@ private class ObjV2D<T:Dynamic> implements IV2D<T> {
 	}
 }
 
-private interface IV2D<T> {
+interface IV2D<T> {
 	
 	var cols(default, null):Int;
 	var rows(default, null):Int;
