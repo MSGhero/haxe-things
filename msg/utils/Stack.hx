@@ -65,12 +65,12 @@ class Stack<T>{
 	/**
 	 * Returns the location of the T in the stack.
 	 * The top of the stack is index 0.
-	 * @param	t			The T to search for.
+	 * @param	t		The T to search for.
 	 * @param	fromIndex	Optional index to begin searching from.
 	 * @return
 	 */
 	public function indexOf(t:T, ?fromIndex:Int):Int {
-		var i = arr.indexOf(t, fromIndex);
+		var i = arr.indexOf(t, length - fromIndex - 1);
 		return i == -1 ? i : length - i - 1;
 	}
 	
@@ -80,5 +80,9 @@ class Stack<T>{
 	 */
 	public function isEmpty():Bool {
 		return length == 0;
+	}
+	
+	public inline function iterator() {
+		return arr.iterator();
 	}
 }

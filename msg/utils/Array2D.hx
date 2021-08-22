@@ -39,6 +39,18 @@ class Array2D<T>{
 	}
 	
 	/**
+	 * The array's 2D iterator.
+	 * Usage:
+	 * @example
+	 * for (rc in myA2D.iterator2()) {
+	 *     trace(rc.index, rc.row, rc.col);
+	 * }
+	 */
+	public function iterator2():A2DIterator {
+		return new A2DIterator(length, cols);
+	}
+	
+	/**
 	 * Clears the array and fills it with the supplied T.
 	 * @param	t	What to fill the array with.
 	 * @param	len	How many Ts to add.
@@ -329,11 +341,45 @@ class Array2D<T>{
 			for (i in 0...rows) {
 				s += "\n";
 				for (j in 0...cols) {
+					if (getIndexOf(i, j) >= length) break;
 					s += '${get2(i, j)},';
 				}
 			}
 		}
 		
 		return s;
+	}
+}
+
+private class A2DIterator {
+	
+	var length:Int = 0;
+	var cols:Int = 0;
+	var i:Int = 0;
+	
+	public inline function new(length:Int, cols:Int) {
+		this.length = length;
+		this.cols = cols;
+	}
+	
+	public inline function hasNext():Bool {
+		return i < length;
+	}
+	
+	public inline function next():A2DIteratorObject {
+		return new A2DIteratorObject(i++, cols);
+	}
+}
+
+private class A2DIteratorObject {
+	
+	public var index(default, null):Int;
+	public var row(default, null):Int;
+	public var col(default, null):Int;
+	
+	public inline function new(index:Int, cols:Int) {
+		this.index = index;
+		row = Std.int(index / cols);
+		col = index % cols;
 	}
 }
