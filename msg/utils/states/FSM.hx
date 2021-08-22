@@ -54,6 +54,9 @@ class FSM {
 	 * Call reset() if you need to use this FSM again.
 	 */
 	public function destroy():Void {
+		
+		destroyAll();
+		
 		stateMap = null;
 		fromMap = null;
 		current = previous = next = null;
@@ -61,15 +64,14 @@ class FSM {
 	
 	/**
 	 * Adds a state mapping to the FSM.
-	 * @param	stateName	Name of the state.
 	 * @param	state		An instance of the state object itself which implements IState.
 	 * @param	from		An array of state names that this state can transition from.
 	 * 						Empty array or null means this state can transition from any state.
 	 * @return	This, for method chaining.
 	 */
-	public function addState(stateName:String, state:IState, ?from:Array<String>):FSM {
-		stateMap.set(stateName, state);
-		fromMap.set(stateName, from == null ? [] : from);
+	public function addState(state:IState, ?from:Array<String>):FSM {
+		stateMap.set(state.name, state);
+		fromMap.set(state.name, from == null ? [] : from);
 		return this;
 	}
 	
@@ -115,14 +117,14 @@ class FSM {
 	 * Calls destroy on all added states.
 	 */
 	public function destroyAll():Void {
-		for (state in stateMap) state.destroy();
+		if (stateMap != null) for (state in stateMap) state.destroy();
 	}
 	
 	/**
 	 * Updates the current state.
 	 * @param	dt			Elapsed time.
 	 */
-	public inline function update(dt:Float):Void {
+	public function update(dt:Float):Void {
 		current.update(dt);
 	}
 	
@@ -149,11 +151,11 @@ class FSM {
 			current = ns;
 			current.enter();
 		}
-		
+		/*
 		else if (current.name == newState) {
-			//
+			// I don't think this should be undealt with, remove?
 		}
-		
+		*/
 		else if (canSwapFrom(newState, current.name)) {
 			next = ns;
 			current.exit();

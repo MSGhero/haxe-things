@@ -9,12 +9,16 @@ class StackFSM extends FSM {
 	/** The stack backing the fsm's current states. */
 	var stack:Stack<String>;
 	
+	/** Used to keep track of newly added states, which shouldn't be update()d on the frame they're added */
+	var fresh:Bool;
+	
 	/**
 	 * Creates a new FSM based on a Stack.
 	 */
 	public function new() {
 		super();
 		
+		fresh = false;
 	}
 	
 	/**
@@ -23,11 +27,14 @@ class StackFSM extends FSM {
 	override public function reset():Void {
 		super.reset();
 		stack = new Stack<String>();
+		fresh = false;
 	}
 	
 	/**
 	 * Adds a state to the top of the stack.
 	 * The current state is suspended until the new state is removed.
+	 * Keep in mind that suspended states are still update()d.
+	 * You should include logic in suspend() and update() to achieve the desired effect.
 	 * @param	newState	Name of the state.
 	 */
 	public function push(newState:String):Void {
@@ -58,6 +65,8 @@ class StackFSM extends FSM {
 		else {
 			throw 'Cannot push State ${newState} onto State ${current.name}.';
 		}
+		
+		fresh = true;
 	}
 	
 	/**
@@ -83,7 +92,17 @@ class StackFSM extends FSM {
 	}
 	
 	/**
-	 * Pops up to, but not including, the specified state.
+	 * Checks if the specified state is already on the stack.
+	 * You can have more than one of a state on the stack.
+	 * @param searchState 	The state to search for.
+	 * @return Bool
+	 */
+	public function onStack(searchState:String):Bool {
+		return stack.indexOf(searchState) > -1;
+	}
+	
+	/**
+	 * Pops up to, but not including, the topmost instance of the specified state.
 	 * I.e. removes all states above the specified and makes it the current.
 	 * @param	searchState	The state to search for and make current.
 	 * @return	The number of states that were popped.
@@ -119,6 +138,7 @@ class StackFSM extends FSM {
 		
 		if (current == null) {
 			current = ns;
+			stack.push(newState);
 			current.enter();
 		}
 		
@@ -139,6 +159,21 @@ class StackFSM extends FSM {
 		
 		else {
 			throw 'Cannot switch from State ${current.name} to State ${newState}.';
+		}
+		
+		fresh = true;
+	}
+	
+	override function update(dt:Float) {
+		
+		for (state in stack) {
+			
+			if (fresh) {
+				fresh = false;
+				break;
+			}
+			
+			stateMap.get(state).update(dt);
 		}
 	}
 }
